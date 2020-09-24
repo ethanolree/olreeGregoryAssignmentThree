@@ -11,6 +11,8 @@ import CoreMotion
 
 
 class GameViewController : UIViewController {
+    
+    // MARK: Properties
 	// properties to set by entering controller
     var imageToShow = "texture" // replace this with the image name, in segue to controller
     // Possible Objects to Find
@@ -25,7 +27,7 @@ class GameViewController : UIViewController {
     
     // anmations for labels
     let animation = CATransition()
-    let animationKey = kCATransitionPush
+    let animationKey = convertFromCATransitionType(CATransitionType.push)
     
     // game state tracking variables
     var currentObjectToFind = "Nothing"
@@ -38,12 +40,13 @@ class GameViewController : UIViewController {
     @IBOutlet weak var topLabel: UILabel!
     @IBOutlet weak var middleLabel: UILabel!
     
+    // MARK: View Controller Life Cycle
     override func viewDidLoad() {
 		super.viewDidLoad()
         
         // for nice animations on the text
-        animation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
-        animation.type = animationKey
+        animation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
+        animation.type = convertToCATransitionType(animationKey)
         animation.duration = 0.5
         
 		// Setup environment
@@ -117,6 +120,8 @@ class GameViewController : UIViewController {
         }
     }
     
+    
+    // MARK: Scene Setup
     func addLivingRoom(){
         
         guard let sceneView = sceneView else {
@@ -226,3 +231,13 @@ class GameViewController : UIViewController {
 }
 
 
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromCATransitionType(_ input: CATransitionType) -> String {
+	return input.rawValue
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToCATransitionType(_ input: String) -> CATransitionType {
+	return CATransitionType(rawValue: input)
+}

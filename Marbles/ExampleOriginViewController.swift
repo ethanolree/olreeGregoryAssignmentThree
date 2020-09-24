@@ -3,7 +3,6 @@
 //  Marbles
 //
 //  Created by Eric Larson on 9/5/18.
-//  Copyright © 2018 Friedrich Gräter. All rights reserved.
 //
 
 import UIKit
@@ -26,7 +25,7 @@ class ExampleOriginViewController: UIViewController {
         vc.imageToShow = "Wood_Floor_Light"
         
         // you could also set the property 'objectsToFind' here
-        // if you wanted to change what views wereaccesible
+        // if you wanted to change what views were accesible
     }
     
 

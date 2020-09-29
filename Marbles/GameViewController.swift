@@ -114,6 +114,9 @@ class GameViewController : UIViewController {
                 self.cameraNode.eulerAngles.x = -pitch 
                 self.cameraNode.eulerAngles.y = -yaw
 
+//                self.scene.physicsWorld.gravity.x =  Float(deviceMotion.gravity.x)*9.8
+//                self.scene.physicsWorld.gravity.y =  Float(deviceMotion.gravity.y)*9.8
+//                self.scene.physicsWorld.gravity.z =  Float(deviceMotion.gravity.z)*9.8
                 
             }
             
@@ -133,6 +136,8 @@ class GameViewController : UIViewController {
 
         // load living room model we created in sketchup
         let room = SCNScene(named: "Room.scn")!
+        
+        room.physicsWorld.gravity = SCNVector3(x: 0, y: 0, z: -9.8)
 
         // add custom texture to the TV in scene
         let material = SCNMaterial()
@@ -191,7 +196,7 @@ class GameViewController : UIViewController {
             }
         }
         
-        // for each node, user recursion to get if it has name of object
+        // for each node, use recursion to get if it has name of object
         var found = false;
         for res in hitTestResults{
             if(findName(res.node)){
@@ -213,6 +218,27 @@ class GameViewController : UIViewController {
             // display feedback that they havent found anything yet
             displayBriefly("Try Again!")
             self.updating = false
+            
+            // add sphere to the world to make things harder
+            let sphere = SCNNode(geometry: SCNSphere(radius:5))
+            
+            let material = SCNMaterial()
+            material.diffuse.contents = UIColor.red
+            
+            //let physics = SCNPhysicsBody()
+            let physics = SCNPhysicsBody(type: .dynamic, shape:SCNPhysicsShape(geometry: sphere.geometry!, options:nil))
+            //physics.type = .dynamic
+            //physics.mass = 1
+            physics.isAffectedByGravity = true
+            
+            sphere.geometry?.firstMaterial = material
+            sphere.position = cameraNode.position
+            sphere.physicsBody = physics
+            
+            
+            
+            scene.rootNode.addChildNode(sphere)
+            
         }
         
     }

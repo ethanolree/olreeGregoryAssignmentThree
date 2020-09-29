@@ -114,9 +114,9 @@ class GameViewController : UIViewController {
                 self.cameraNode.eulerAngles.x = -pitch 
                 self.cameraNode.eulerAngles.y = -yaw
 
-//                self.scene.physicsWorld.gravity.x =  Float(deviceMotion.gravity.x)*9.8
-//                self.scene.physicsWorld.gravity.y =  Float(deviceMotion.gravity.y)*9.8
-//                self.scene.physicsWorld.gravity.z =  Float(deviceMotion.gravity.z)*9.8
+                self.scene.physicsWorld.gravity.x =  Float(deviceMotion.gravity.x)*9.8
+                self.scene.physicsWorld.gravity.y =  Float(deviceMotion.gravity.y)*9.8
+                self.scene.physicsWorld.gravity.z =  Float(deviceMotion.gravity.z)*9.8
                 
             }
             
@@ -220,16 +220,20 @@ class GameViewController : UIViewController {
             self.updating = false
             
             // add sphere to the world to make things harder
-            let sphere = SCNNode(geometry: SCNSphere(radius:5))
+            //let sphere = SCNNode(geometry: SCNCylinder(radius: 5, height: 3))
+            let sphere = SCNNode(geometry: SCNSphere(radius: 5))
             
             let material = SCNMaterial()
             material.diffuse.contents = UIColor.red
             
             //let physics = SCNPhysicsBody()
-            let physics = SCNPhysicsBody(type: .dynamic, shape:SCNPhysicsShape(geometry: sphere.geometry!, options:nil))
+            let physics = SCNPhysicsBody(type: .dynamic,
+                                         shape:SCNPhysicsShape(geometry: sphere.geometry!, options:nil))
             //physics.type = .dynamic
             //physics.mass = 1
             physics.isAffectedByGravity = true
+            physics.friction = 1
+            physics.restitution = 5
             
             sphere.geometry?.firstMaterial = material
             sphere.position = cameraNode.position

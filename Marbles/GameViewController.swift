@@ -10,7 +10,7 @@ import SceneKit
 import CoreMotion
 
 
-class GameViewController : UIViewController {
+class GameViewController : UIViewController, SCNPhysicsContactDelegate {
     
     // MARK: Properties
 	// properties to set by entering controller
@@ -24,6 +24,11 @@ class GameViewController : UIViewController {
     var wallNode: SCNNode!
 	var motionManager : CMMotionManager!
     var initialAttitude: (roll: Double, pitch:Double, yaw:Double)?
+    var room:SCNScene!
+    var rink:SCNNode!
+    
+    var playerScore:Int = 0
+    var computerScore:Int = 0
     
     // anmations for labels
     let animation = CATransition()
@@ -50,7 +55,7 @@ class GameViewController : UIViewController {
         animation.duration = 0.5
         
 		// Setup environment
-        addLivingRoom() // make scene
+        addRink() // make scene
         addTapGestureToSceneView()  // make taps for selecting objects
         setupMotion() // use motion to control camera
         
@@ -61,34 +66,12 @@ class GameViewController : UIViewController {
         super.viewDidAppear(animated)
         let deadlineTime = DispatchTime.now() + 1
         DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
-            self.setNextObjectToFind() // start the game and tell user what object to use!
+            self.updateScore() // start the game and tell user what object to use!
         }
     }
     
-    func setNextObjectToFind(){
-        if(updating){return}
-        // change the current object we are asking the participant to find
-        if(head+1 < objectsToFind.count){
-            // if here, there are still more objects to find
-            // increment
-            head += 1
-            currentObjectToFind = objectsToFind[head]
-            
-            topLabel.layer.add(animation, forKey: animationKey)
-            topLabel.text = currentObjectToFind
-        }else{
-            // if here, they found the last item! End the game
-            topLabel.layer.add(animation, forKey: animationKey)
-            topLabel.text = "You found all the items!"
-            currentObjectToFind = "A super long string that cannot be found in the data!"
-            // setting currentObjectToFind to something odd means it cannot
-            // be found in the scene
-            doneButton.layer.add(animation, forKey: animationKey)
-            doneButton.isHidden = false
-        }
-        updating = false
-    }
     
+    // MARK: Motion in World
     func setupMotion(){
         // use motion for camera movement
         motionManager = CMMotionManager()
@@ -101,31 +84,38 @@ class GameViewController : UIViewController {
             if let deviceMotion = deviceMotion{
                 if (self.initialAttitude == nil)
                 {
-                    // save initial orientaton of phone
-                    self.initialAttitude = (deviceMotion.attitude.roll,
-                                            deviceMotion.attitude.pitch,
-                                            deviceMotion.attitude.yaw)
+                    // save  orientaton of phone for z device to point down
+                    self.initialAttitude = (0, Double.pi/3, 0)
+                    
                 }
                 
                 // update camera angle based upon the difference to original position
                 let pitch = Float(self.initialAttitude!.pitch - deviceMotion.attitude.pitch)
                 let yaw = Float(self.initialAttitude!.yaw - deviceMotion.attitude.yaw)
                 
-                self.cameraNode.eulerAngles.x = -pitch 
+                self.cameraNode.eulerAngles.x = -pitch
                 self.cameraNode.eulerAngles.y = -yaw
-
-                self.scene.physicsWorld.gravity.x =  Float(deviceMotion.gravity.x)*9.8
-                self.scene.physicsWorld.gravity.y =  Float(deviceMotion.gravity.y)*9.8
-                self.scene.physicsWorld.gravity.z =  Float(deviceMotion.gravity.z)*9.8
+                
+                // rink has x in same direction, left or right in rink
+                self.scene.physicsWorld.gravity.x =  Float(deviceMotion.gravity.x)*90.8
+                
+                // reverse the y device such that subtle changes
+                // really change the up and down rink actions
+                self.scene.physicsWorld.gravity.z =  Float(deviceMotion.gravity.y)*(-900.8)
+                
+                // hockey rink has "y" in the up down direction
+                // so gravity is down when looking down (z device)
+                // onto the rink
+                self.scene.physicsWorld.gravity.y =  Float(deviceMotion.gravity.z)*(90.8)
                 
             }
             
         }
     }
     
-    
+
     // MARK: Scene Setup
-    func addLivingRoom(){
+    func addRink(){
         
         guard let sceneView = sceneView else {
             return
@@ -133,24 +123,22 @@ class GameViewController : UIViewController {
         
         // Setup Original Scene
         scene = SCNScene()
+        
+        scene.physicsWorld.contactDelegate = self
 
         // load living room model we created in sketchup
-        let room = SCNScene(named: "Room.scn")!
+        room = SCNScene(named: "model.scn")!
         
-        room.physicsWorld.gravity = SCNVector3(x: 0, y: 0, z: -9.8)
-
-        // add custom texture to the TV in scene
-        let material = SCNMaterial()
-        material.diffuse.contents = UIImage(named: imageToShow)
-        let TV = room.rootNode.childNode(withName: "screen", recursively: true)!
-        TV.geometry?.firstMaterial = material
+        room.physicsWorld.gravity = SCNVector3(x: 0, y: 0, z: 0)
         
+        rink = room.rootNode
         scene.rootNode.addChildNode(room.rootNode.childNode(withName: "SketchUp", recursively: true)!)
-        scene.rootNode.addChildNode(TV)
         
         // Setup camera position from existing scene
-        cameraNode = room.rootNode.childNode(withName: "camera", recursively: true)!
-        scene.rootNode.addChildNode(cameraNode)
+        if let cameraNodeTmp = room.rootNode.childNode(withName: "camera", recursively: true){
+            cameraNode = cameraNodeTmp
+            scene.rootNode.addChildNode(cameraNode)
+        }
         
         if let lighting = room.rootNode.childNode(withName: "Lighting", recursively: true){
                 scene.rootNode.addChildNode(lighting)
@@ -164,7 +152,40 @@ class GameViewController : UIViewController {
     
 
     }
+    // MARK: Contact Delegation
+    func physicsWorld(_ world: SCNPhysicsWorld, didEnd contact: SCNPhysicsContact) {
+        
+        func updateContact(puck:String, node:SCNNode){
+            // remove puck from the scene
+            if puck == "player"{
+                self.playerScore += 1
+            }else{
+                self.computerScore += 1
+            }
+            node.removeFromParentNode()
+            
+            DispatchQueue.main.async {
+                self.updateScore()
+            }
+        }
+        
+        if let nameA = contact.nodeA.name,
+            let nameB = contact.nodeB.name,
+            nameA == "ID546" { // this is the name of the goal
+            // remove puck from the scene
+            updateContact(puck: nameB, node: contact.nodeB)
+        }
+        
+        if let nameB = contact.nodeB.name,
+           let nameA = contact.nodeA.name,
+            nameB == "ID546"{
+            
+            updateContact(puck: nameA, node: contact.nodeA)
+        }
+        
+    }
     
+    // MARK: User Interface Interactions
     @IBAction func doneButtonPressed(_ sender: UIButton) {
         // this button was enabled by end of game, time to go away
         self.dismiss(animated: true, completion: nil)
@@ -180,73 +201,74 @@ class GameViewController : UIViewController {
         updating = true // prevent from tapping wildly
         
         // what did the user tap? Anything?
-        let tapLocation = sender.location(in: sceneView)
-        let hitTestResults = sceneView.hitTest(tapLocation)
+        //let tapLocation = sender.location(in: sceneView)
+        //let hitTestResults = sceneView.hitTest(tapLocation)
         
-        // setup a recurrsion for finding in the parent
-        func findName(_ node:SCNNode?)->Bool{
-            if let node = node{
-                if let name = node.name{
-                    return name.contains(currentObjectToFind) || findName(node.parent)
-                }else{
-                    return findName(node.parent)
-                }
-            }else{
-                return false
-            }
-        }
+        // add sphere to the world to make things harder
+        let puck = SCNNode(geometry: SCNCylinder(radius: 25, height: 15))
         
-        // for each node, use recursion to get if it has name of object
-        var found = false;
-        for res in hitTestResults{
-            if(findName(res.node)){
-                found = true
-            }
-        }
-        
-        if(found){
-            // they tapped the object!
-            displayBriefly("Correct!")
-            
-            // wait one second and update the object
-            let deadlineTime = DispatchTime.now() + 1
-            DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
-                self.updating = false
-                self.setNextObjectToFind()
-            }
+        let material = SCNMaterial()
+
+        // randomly generate a player puck or CPU puck
+        if self.random() > 0.5 {
+            material.diffuse.contents = UIColor.green
+            puck.name = "player"
         }else{
-            // display feedback that they havent found anything yet
-            displayBriefly("Try Again!")
-            self.updating = false
-            
-            // add sphere to the world to make things harder
-            //let sphere = SCNNode(geometry: SCNCylinder(radius: 5, height: 3))
-            let sphere = SCNNode(geometry: SCNSphere(radius: 5))
-            
-            let material = SCNMaterial()
             material.diffuse.contents = UIColor.red
-            
-            //let physics = SCNPhysicsBody()
-            let physics = SCNPhysicsBody(type: .dynamic,
-                                         shape:SCNPhysicsShape(geometry: sphere.geometry!, options:nil))
-            //physics.type = .dynamic
-            //physics.mass = 1
-            physics.isAffectedByGravity = true
-            physics.friction = 1
-            physics.restitution = 5
-            
-            sphere.geometry?.firstMaterial = material
-            sphere.position = cameraNode.position
-            sphere.physicsBody = physics
-            
-            
-            
-            scene.rootNode.addChildNode(sphere)
-            
+            puck.name = "cpu"
         }
+        
+        
+        let physics = SCNPhysicsBody(type: .dynamic,
+                                     shape:SCNPhysicsShape(geometry: puck.geometry!, options:nil))
+
+        physics.isAffectedByGravity = true
+        physics.friction = 1
+        physics.restitution = 1
+        physics.categoryBitMask  = 0xFFFF
+        physics.collisionBitMask = 0xFFFF
+        physics.contactTestBitMask  = 0xFFFF
+        
+        puck.geometry?.firstMaterial = material
+        puck.position = cameraNode.position
+        puck.position.y -= 150
+        puck.position.z -= 200
+        puck.physicsBody = physics
+        puck.castsShadow = true
+        
+        
+        
+        scene.rootNode.addChildNode(puck)
+        
+        self.updating = false
         
     }
+    
+    func updateScore(){
+        if(updating){return}
+        // change the current object we are asking the participant to find
+        
+        topLabel.layer.add(animation, forKey: animationKey)
+        topLabel.text = "You: \(self.playerScore), CPU: \(self.computerScore)"
+        
+        if(playerScore>=5 || computerScore>=5){
+            // if here, End the game
+            topLabel.layer.add(animation, forKey: animationKey)
+            if playerScore > computerScore{
+                topLabel.text = "You Win!"
+            }else{
+                topLabel.text = "You Lose!"
+            }
+
+            // add in the done button
+            doneButton.layer.add(animation, forKey: animationKey)
+            doneButton.isHidden = false
+        }
+
+        updating = false
+    }
 	
+    // MARK: Utility Functions
     func displayBriefly(_ text:String){
         // display quickly on screen and then move out
         middleLabel.layer.add(animation,forKey:animationKey)
@@ -257,6 +279,13 @@ class GameViewController : UIViewController {
             self.middleLabel.text = ""
         }
     }
+    
+    // MARK: Utility Functions (thanks ray wenderlich!)
+        func random() -> Float {
+            return Float(arc4random()) / Float(UInt32.max)
+        }
+        
+        
 
 }
 

@@ -13,10 +13,6 @@ import CoreMotion
 class GameViewController : UIViewController, SCNPhysicsContactDelegate {
     
     // MARK: Properties
-	// properties to set by entering controller
-    var imageToShow = "texture" // replace this with the image name, in segue to controller
-    // Possible Objects to Find
-    var objectsToFind = ["Candles","Table","Couch","Rug","TV","Fireplace"]
     
     // SCN setup
     var scene : SCNScene!
@@ -35,8 +31,6 @@ class GameViewController : UIViewController, SCNPhysicsContactDelegate {
     let animationKey = convertFromCATransitionType(CATransitionType.push)
     
     // game state tracking variables
-    var currentObjectToFind = "Nothing"
-    var head = -1;
     var updating = false
 	
     // outlets
@@ -55,6 +49,9 @@ class GameViewController : UIViewController, SCNPhysicsContactDelegate {
         animation.duration = 0.5
         
 		// Setup environment
+        // save  orientaton of phone for z device to point down
+        self.initialAttitude = (0, Double.pi/3, 0)
+        
         addRink() // make scene
         addTapGestureToSceneView()  // make taps for selecting objects
         setupMotion() // use motion to control camera
@@ -82,12 +79,6 @@ class GameViewController : UIViewController, SCNPhysicsContactDelegate {
             (deviceMotion, error) -> Void in
             
             if let deviceMotion = deviceMotion{
-                if (self.initialAttitude == nil)
-                {
-                    // save  orientaton of phone for z device to point down
-                    self.initialAttitude = (0, Double.pi/3, 0)
-                    
-                }
                 
                 // update camera angle based upon the difference to original position
                 let pitch = Float(self.initialAttitude!.pitch - deviceMotion.attitude.pitch)
@@ -124,6 +115,7 @@ class GameViewController : UIViewController, SCNPhysicsContactDelegate {
         // Setup Original Scene
         scene = SCNScene()
         
+        // we will handle all collisions
         scene.physicsWorld.contactDelegate = self
 
         // load living room model we created in sketchup
@@ -141,8 +133,8 @@ class GameViewController : UIViewController, SCNPhysicsContactDelegate {
         }
         
         if let lighting = room.rootNode.childNode(withName: "Lighting", recursively: true){
-                scene.rootNode.addChildNode(lighting)
-            }
+            scene.rootNode.addChildNode(lighting)
+        }
         
         // make this the scene in the view
         sceneView.scene = scene
@@ -171,14 +163,14 @@ class GameViewController : UIViewController, SCNPhysicsContactDelegate {
         
         if let nameA = contact.nodeA.name,
             let nameB = contact.nodeB.name,
-            nameA == "ID546" { // this is the name of the goal
+            nameA == "Goal" { // this is the name of the goal
             // remove puck from the scene
             updateContact(puck: nameB, node: contact.nodeB)
         }
         
         if let nameB = contact.nodeB.name,
            let nameA = contact.nodeA.name,
-            nameB == "ID546"{
+            nameB == "Goal"{
             
             updateContact(puck: nameA, node: contact.nodeA)
         }
@@ -200,10 +192,6 @@ class GameViewController : UIViewController, SCNPhysicsContactDelegate {
         if(updating){return}
         updating = true // prevent from tapping wildly
         
-        // what did the user tap? Anything?
-        //let tapLocation = sender.location(in: sceneView)
-        //let hitTestResults = sceneView.hitTest(tapLocation)
-        
         // add sphere to the world to make things harder
         let puck = SCNNode(geometry: SCNCylinder(radius: 25, height: 15))
         
@@ -218,13 +206,14 @@ class GameViewController : UIViewController, SCNPhysicsContactDelegate {
             puck.name = "cpu"
         }
         
-        
+        // place hockey puck in the scene, directly where camera is
         let physics = SCNPhysicsBody(type: .dynamic,
                                      shape:SCNPhysicsShape(geometry: puck.geometry!, options:nil))
 
         physics.isAffectedByGravity = true
         physics.friction = 1
         physics.restitution = 1
+        // setup so that it can collide with the goal
         physics.categoryBitMask  = 0xFFFF
         physics.collisionBitMask = 0xFFFF
         physics.contactTestBitMask  = 0xFFFF
@@ -235,9 +224,7 @@ class GameViewController : UIViewController, SCNPhysicsContactDelegate {
         puck.position.z -= 200
         puck.physicsBody = physics
         puck.castsShadow = true
-        
-        
-        
+
         scene.rootNode.addChildNode(puck)
         
         self.updating = false
@@ -263,9 +250,11 @@ class GameViewController : UIViewController, SCNPhysicsContactDelegate {
             // add in the done button
             doneButton.layer.add(animation, forKey: animationKey)
             doneButton.isHidden = false
+        }else{
+            updating = false
         }
 
-        updating = false
+        
     }
 	
     // MARK: Utility Functions
@@ -281,15 +270,11 @@ class GameViewController : UIViewController, SCNPhysicsContactDelegate {
     }
     
     // MARK: Utility Functions (thanks ray wenderlich!)
-        func random() -> Float {
-            return Float(arc4random()) / Float(UInt32.max)
-        }
+    func random() -> Float {
+        return Float(arc4random()) / Float(UInt32.max)
+    }
         
-        
-
 }
-
-
 
 // Helper function inserted by Swift 4.2 migrator.
 fileprivate func convertFromCATransitionType(_ input: CATransitionType) -> String {

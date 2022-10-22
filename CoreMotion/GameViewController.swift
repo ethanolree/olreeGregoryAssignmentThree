@@ -21,10 +21,10 @@ class GameViewController : UIViewController, SCNPhysicsContactDelegate {
 	var motionManager : CMMotionManager!
     var initialAttitude: (roll: Double, pitch:Double, yaw:Double)?
     var room:SCNScene!
-    var rink:SCNNode!
+    var crate:SCNNode!
     
     var playerScore:Int = 0
-    var computerScore:Int = 0
+    var numberOfBalls:Int = 10
     
     // anmations for labels
     let animation = CATransition()
@@ -32,7 +32,7 @@ class GameViewController : UIViewController, SCNPhysicsContactDelegate {
     
     // game state tracking variables
     var updating = false
-	
+    
     // outlets
     @IBOutlet weak var doneButton: UIButton!
     @IBOutlet weak var sceneView: SCNView!
@@ -56,7 +56,7 @@ class GameViewController : UIViewController, SCNPhysicsContactDelegate {
         addTapGestureToSceneView()  // make taps for selecting objects
         setupMotion() // use motion to control camera
         
-        
+        topLabel.backgroundColor = UIColor.blue
 	}
     
     override func viewDidAppear(_ animated: Bool) {
@@ -87,16 +87,10 @@ class GameViewController : UIViewController, SCNPhysicsContactDelegate {
                 self.cameraNode.eulerAngles.x = -pitch
                 self.cameraNode.eulerAngles.y = -yaw
                 
-                // rink has x in same direction, left or right in rink
-                self.scene.physicsWorld.gravity.x =  Float(deviceMotion.gravity.x)*90.8
+                // ball is affected by rotation to the left and right
+                self.scene.physicsWorld.gravity.x =  Float(deviceMotion.gravity.x)*200
                 
-                // reverse the y device such that subtle changes
-                // really change the up and down rink actions
-                //self.scene.physicsWorld.gravity.z =  Float(deviceMotion.gravity.y)*(-900.8)
-                
-                // hockey rink has "y" in the up down direction
-                // so gravity is down when looking down (z device)
-                // onto the rink
+                // ball is affected by gravity "y" in the up down direction
                 self.scene.physicsWorld.gravity.y =  Float(deviceMotion.gravity.z)*(90.8)
                 
             }
@@ -118,22 +112,29 @@ class GameViewController : UIViewController, SCNPhysicsContactDelegate {
         // we will handle all collisions
         scene.physicsWorld.contactDelegate = self
 
-        // load living room model we created in sketchup
+        // load crate model we created in sketchup
         room = SCNScene(named: "crate.scn")!
         
         room.physicsWorld.gravity = SCNVector3(x: 0, y: 0, z: 0)
         
-        rink = room.rootNode
-        scene.rootNode.addChildNode(room.rootNode.childNode(withName: "SketchUp", recursively: true)!)
+        crate = room.rootNode
         
-        if let lighting = room.rootNode.childNode(withName: "Lighting", recursively: true){
-            scene.rootNode.addChildNode(lighting)
+        // Setup base crate object for scene
+        if let crate = room.rootNode.childNode(withName: "SketchUp", recursively: false){
+            scene.rootNode.addChildNode(crate)
+            print(crate.categoryBitMask)
         }
         
         // Setup camera position from existing scene
         if let cameraNodeTmp = room.rootNode.childNode(withName: "camera", recursively: true){
             cameraNode = cameraNodeTmp
             scene.rootNode.addChildNode(cameraNode)
+        }
+        
+        // Setup lighting
+        if let lighting = room.rootNode.childNode(withName: "Lighting", recursively: true){
+            scene.rootNode.addChildNode(lighting)
+            print(lighting.categoryBitMask)
         }
         
         if let box = room.rootNode.childNode(withName: "box", recursively: true){
@@ -153,12 +154,11 @@ class GameViewController : UIViewController, SCNPhysicsContactDelegate {
     func physicsWorld(_ world: SCNPhysicsWorld, didBegin contact: SCNPhysicsContact) {
         
         func updateContact(ball:String, node:SCNNode){
-            // remove puck from the scene
-            if ball == "player"{
+            // remove ball from the scene
+            if ball == "ball"{
                 self.playerScore += 1
-            }else{
-                self.computerScore += 1
             }
+            
             node.removeFromParentNode()
             
             DispatchQueue.main.async {
@@ -170,14 +170,12 @@ class GameViewController : UIViewController, SCNPhysicsContactDelegate {
             let nameB = contact.nodeB.name,
             nameA == "box" { // this is the name of the collision box
             // remove ball from the scene
-            print("aqui")
             updateContact(ball: nameB, node: contact.nodeB)
         }
         
         if let nameB = contact.nodeB.name,
            let nameA = contact.nodeA.name,
             nameB == "box"{
-            print("here")
             updateContact(ball: nameA, node: contact.nodeA)
         }
         
@@ -200,19 +198,15 @@ class GameViewController : UIViewController, SCNPhysicsContactDelegate {
         
         // add sphere to the world to make things harder
         let ball = SCNNode(geometry: SCNSphere(radius: 15))
+        numberOfBalls -= 1
         
         let material = SCNMaterial()
 
-        // randomly generate a player puck or CPU puck
-        if self.random() > 0.5 {
-            material.diffuse.contents = UIColor.green
-            ball.name = "player"
-        }else{
-            material.diffuse.contents = UIColor.red
-            ball.name = "cpu"
-        }
+        // create a ball with random colors
+        material.diffuse.contents = UIColor.init(red: CGFloat(self.random()), green: CGFloat(self.random()), blue: CGFloat(self.random()), alpha: 1)
+        ball.name = "ball"
         
-        // place hockey puck in the scene, directly where camera is
+        // place the ball in the scene at the position of the camera
         let physics = SCNPhysicsBody(type: .dynamic,
                                      shape:SCNPhysicsShape(geometry: ball.geometry!, options:nil))
 
@@ -226,6 +220,7 @@ class GameViewController : UIViewController, SCNPhysicsContactDelegate {
         physics.contactTestBitMask  = 0xFFFFFFFF
         
         ball.geometry?.firstMaterial = material
+        // offset the bals x position for slight variation
         ball.position = SCNVector3(cameraNode.position.x + 50*(0.5 - self.random()), cameraNode.position.y, cameraNode.position.z)
         ball.physicsBody = physics
         ball.castsShadow = true
@@ -233,7 +228,7 @@ class GameViewController : UIViewController, SCNPhysicsContactDelegate {
         scene.rootNode.addChildNode(ball)
         
         self.updating = false
-        
+        self.updateScore()
     }
     
     func updateScore(){
@@ -241,12 +236,12 @@ class GameViewController : UIViewController, SCNPhysicsContactDelegate {
         // change the current object we are asking the participant to find
         
         topLabel.layer.add(animation, forKey: animationKey)
-        topLabel.text = "You: \(self.playerScore), CPU: \(self.computerScore)"
+        topLabel.text = "Balls Remaining: \(self.numberOfBalls) | Score: \(self.playerScore)"
         
-        if(playerScore>=5 || computerScore>=5){
+        if(playerScore>=5 || numberOfBalls < 0){
             // if here, End the game
             topLabel.layer.add(animation, forKey: animationKey)
-            if playerScore > computerScore{
+            if playerScore >= 5{
                 topLabel.text = "You Win!"
             }else{
                 topLabel.text = "You Lose!"

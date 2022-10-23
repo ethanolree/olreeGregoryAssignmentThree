@@ -29,6 +29,11 @@ class ExampleOriginViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.yesterdaySteps.morphingEffect = .fall
+        self.todaySteps.morphingEffect = .fall
+        self.stepsToGoal.morphingEffect = .fall
+        self.currentActivity.morphingEffect = .fall
+        
         self.getYesterdaySteps()
         self.startPedometerMonitoring()
         self.startActivityMonitoring()
@@ -51,7 +56,6 @@ class ExampleOriginViewController: UIViewController {
                     print("yesterday's steps")
                     
                     print(data.numberOfSteps.floatValue)
-                    
                     
                     print(self.cal.startOfDay(for: (Calendar.current.date(byAdding: .day, value: -1, to: Date())!)))
                     print(self.cal.startOfDay(for: Date()))

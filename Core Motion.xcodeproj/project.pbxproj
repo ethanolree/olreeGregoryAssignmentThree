@@ -13,6 +13,7 @@
 		79EF231419E0AE8100970F12 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 79EF231319E0AE8100970F12 /* Images.xcassets */; };
 		79EF232D19E0AEDF00970F12 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 79EF232C19E0AEDF00970F12 /* Main.storyboard */; };
 		B6D3C9632140C3710002D463 /* ExampleOriginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D3C9622140C3710002D463 /* ExampleOriginViewController.swift */; };
+		C553A5DB2905F5BE0001239E /* demoVideo.MOV in Resources */ = {isa = PBXBuildFile; fileRef = C553A5DA2905F5BE0001239E /* demoVideo.MOV */; };
 		C5DDF6172905ADB900713812 /* Liquid in Frameworks */ = {isa = PBXBuildFile; productRef = C5DDF6162905ADB900713812 /* Liquid */; };
 		C5DDF6202905BC7200713812 /* Shiny in Frameworks */ = {isa = PBXBuildFile; productRef = C5DDF61F2905BC7200713812 /* Shiny */; };
 		C5DDF6242905C15C00713812 /* TestingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5DDF6232905C15C00713812 /* TestingView.swift */; };
@@ -30,6 +31,7 @@
 		79EF231319E0AE8100970F12 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		79EF232C19E0AEDF00970F12 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		B6D3C9622140C3710002D463 /* ExampleOriginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleOriginViewController.swift; sourceTree = "<group>"; };
+		C553A5DA2905F5BE0001239E /* demoVideo.MOV */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; name = demoVideo.MOV; path = ../demoVideo.MOV; sourceTree = "<group>"; };
 		C5DDF6232905C15C00713812 /* TestingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestingView.swift; sourceTree = "<group>"; };
 		CC62E81F26FCD60A00046703 /* model */ = {isa = PBXFileReference; lastKnownFileType = folder; path = model; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -51,6 +53,7 @@
 		79EF22FC19E0AE8100970F12 = {
 			isa = PBXGroup;
 			children = (
+				C553A5DA2905F5BE0001239E /* demoVideo.MOV */,
 				79EF230719E0AE8100970F12 /* CoreMotion */,
 				79EF230619E0AE8100970F12 /* Products */,
 			);
@@ -151,6 +154,7 @@
 			files = (
 				CC62E82026FCD60A00046703 /* model in Resources */,
 				79EF231419E0AE8100970F12 /* Images.xcassets in Resources */,
+				C553A5DB2905F5BE0001239E /* demoVideo.MOV in Resources */,
 				79EF232D19E0AEDF00970F12 /* Main.storyboard in Resources */,
 				7810810529037CC100B79231 /* crate.scn in Resources */,
 			);

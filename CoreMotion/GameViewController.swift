@@ -22,6 +22,7 @@ class GameViewController : UIViewController, SCNPhysicsContactDelegate {
     var initialAttitude: (roll: Double, pitch:Double, yaw:Double)?
     var room:SCNScene!
     var crate:SCNNode!
+    let defaults = UserDefaults.standard
     
     var playerScore:Int = 0
     var numberOfBalls:Int = 10
@@ -43,6 +44,7 @@ class GameViewController : UIViewController, SCNPhysicsContactDelegate {
     override func viewDidLoad() {
 		super.viewDidLoad()
         
+        self.numberOfBalls = self.defaults.integer(forKey: "steps")
         // for nice animations on the text
         animation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
         animation.type = convertToCATransitionType(animationKey)
@@ -237,6 +239,8 @@ class GameViewController : UIViewController, SCNPhysicsContactDelegate {
         
         topLabel.layer.add(animation, forKey: animationKey)
         topLabel.text = "Balls Remaining: \(self.numberOfBalls) | Score: \(self.playerScore)"
+        
+        self.defaults.set(self.numberOfBalls, forKey: "steps")
         
         if(playerScore>=5 || numberOfBalls < 0){
             // if here, End the game

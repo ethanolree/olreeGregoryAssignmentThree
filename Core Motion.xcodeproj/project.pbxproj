@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -13,6 +13,10 @@
 		79EF231419E0AE8100970F12 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 79EF231319E0AE8100970F12 /* Images.xcassets */; };
 		79EF232D19E0AEDF00970F12 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 79EF232C19E0AEDF00970F12 /* Main.storyboard */; };
 		B6D3C9632140C3710002D463 /* ExampleOriginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D3C9622140C3710002D463 /* ExampleOriginViewController.swift */; };
+		C5DDF6172905ADB900713812 /* Liquid in Frameworks */ = {isa = PBXBuildFile; productRef = C5DDF6162905ADB900713812 /* Liquid */; };
+		C5DDF6202905BC7200713812 /* Shiny in Frameworks */ = {isa = PBXBuildFile; productRef = C5DDF61F2905BC7200713812 /* Shiny */; };
+		C5DDF6242905C15C00713812 /* TestingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5DDF6232905C15C00713812 /* TestingView.swift */; };
+		C5DDF6272905D0EE00713812 /* MorphingLabel in Frameworks */ = {isa = PBXBuildFile; productRef = C5DDF6262905D0EE00713812 /* MorphingLabel */; };
 		CC62E82026FCD60A00046703 /* model in Resources */ = {isa = PBXBuildFile; fileRef = CC62E81F26FCD60A00046703 /* model */; };
 /* End PBXBuildFile section */
 
@@ -26,6 +30,7 @@
 		79EF231319E0AE8100970F12 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		79EF232C19E0AEDF00970F12 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		B6D3C9622140C3710002D463 /* ExampleOriginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleOriginViewController.swift; sourceTree = "<group>"; };
+		C5DDF6232905C15C00713812 /* TestingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestingView.swift; sourceTree = "<group>"; };
 		CC62E81F26FCD60A00046703 /* model */ = {isa = PBXFileReference; lastKnownFileType = folder; path = model; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -34,6 +39,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C5DDF6272905D0EE00713812 /* MorphingLabel in Frameworks */,
+				C5DDF6202905BC7200713812 /* Shiny in Frameworks */,
+				C5DDF6172905ADB900713812 /* Liquid in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -63,6 +71,7 @@
 				B6D3C9622140C3710002D463 /* ExampleOriginViewController.swift */,
 				79EF230E19E0AE8100970F12 /* GameViewController.swift */,
 				79EF232C19E0AEDF00970F12 /* Main.storyboard */,
+				C5DDF6232905C15C00713812 /* TestingView.swift */,
 				79EF231319E0AE8100970F12 /* Images.xcassets */,
 				79EF230919E0AE8100970F12 /* Info.plist */,
 				7810810329037C6A00B79231 /* crate.obj */,
@@ -88,6 +97,11 @@
 			dependencies = (
 			);
 			name = "Core Motion";
+			packageProductDependencies = (
+				C5DDF6162905ADB900713812 /* Liquid */,
+				C5DDF61F2905BC7200713812 /* Shiny */,
+				C5DDF6262905D0EE00713812 /* MorphingLabel */,
+			);
 			productName = Marbles;
 			productReference = 79EF230519E0AE8100970F12 /* Core Motion.app */;
 			productType = "com.apple.product-type.application";
@@ -103,7 +117,6 @@
 				TargetAttributes = {
 					79EF230419E0AE8100970F12 = {
 						CreatedOnToolsVersion = 6.1;
-						DevelopmentTeam = 86MHT76G63;
 						LastSwiftMigration = 1200;
 					};
 				};
@@ -117,6 +130,11 @@
 				Base,
 			);
 			mainGroup = 79EF22FC19E0AE8100970F12;
+			packageReferences = (
+				C5DDF6152905ADB900713812 /* XCRemoteSwiftPackageReference "liquid" */,
+				C5DDF61E2905BC7200713812 /* XCRemoteSwiftPackageReference "shiny" */,
+				C5DDF6252905D0ED00713812 /* XCRemoteSwiftPackageReference "LTMorphingLabel" */,
+			);
 			productRefGroup = 79EF230619E0AE8100970F12 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -146,6 +164,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B6D3C9632140C3710002D463 /* ExampleOriginViewController.swift in Sources */,
+				C5DDF6242905C15C00713812 /* TestingView.swift in Sources */,
 				79EF230F19E0AE8100970F12 /* GameViewController.swift in Sources */,
 				79EF230B19E0AE8100970F12 /* AppDelegate.swift in Sources */,
 			);
@@ -263,10 +282,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 86MHT76G63;
+				DEVELOPMENT_TEAM = 4ZY24G2VUY;
 				INFOPLIST_FILE = coreMotion/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = smu.proj3;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -277,10 +299,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 86MHT76G63;
+				DEVELOPMENT_TEAM = 4ZY24G2VUY;
 				INFOPLIST_FILE = coreMotion/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = smu.proj3;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -309,6 +334,51 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		C5DDF6152905ADB900713812 /* XCRemoteSwiftPackageReference "liquid" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/maustinstar/liquid";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+		C5DDF61E2905BC7200713812 /* XCRemoteSwiftPackageReference "shiny" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/maustinstar/shiny";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+		C5DDF6252905D0ED00713812 /* XCRemoteSwiftPackageReference "LTMorphingLabel" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/lexrus/LTMorphingLabel";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.3;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		C5DDF6162905ADB900713812 /* Liquid */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C5DDF6152905ADB900713812 /* XCRemoteSwiftPackageReference "liquid" */;
+			productName = Liquid;
+		};
+		C5DDF61F2905BC7200713812 /* Shiny */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C5DDF61E2905BC7200713812 /* XCRemoteSwiftPackageReference "shiny" */;
+			productName = Shiny;
+		};
+		C5DDF6262905D0EE00713812 /* MorphingLabel */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C5DDF6252905D0ED00713812 /* XCRemoteSwiftPackageReference "LTMorphingLabel" */;
+			productName = MorphingLabel;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 79EF22FD19E0AE8100970F12 /* Project object */;
 }

@@ -35,15 +35,75 @@
                                     <segue destination="LVB-YS-i5n" kind="presentation" id="TwY-uU-7Nd"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Yun-Fh-Zj9">
+                                <rect key="frame" x="126" y="88" width="186" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wbK-Wi-NpU">
+                                <rect key="frame" x="126" y="137" width="198" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="O23-Zb-NR2">
+                                <rect key="frame" x="126" y="186" width="198" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PD6-PH-ZRz">
+                                <rect key="frame" x="126" y="228" width="186" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="rPH-lu-vfy">
+                                <rect key="frame" x="79" y="386" width="216" height="34"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="a7S-7U-brG">
+                                <rect key="frame" x="128" y="439" width="119" height="35"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="gray" title="Update Goal"/>
+                                <connections>
+                                    <action selector="updateStepGoal:" destination="Qft-90-4d0" eventType="touchUpInside" id="fKn-f9-8Az"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <gestureRecognizers/>
                         <constraints>
                             <constraint firstItem="ZYF-pL-mSO" firstAttribute="centerY" secondItem="3zX-yj-u7E" secondAttribute="centerY" id="LJx-uV-XR2"/>
                             <constraint firstItem="ZYF-pL-mSO" firstAttribute="centerX" secondItem="3zX-yj-u7E" secondAttribute="centerX" id="taT-wk-qpD"/>
                         </constraints>
+                        <connections>
+                            <outletCollection property="gestureRecognizers" destination="pcO-eq-gbo" appends="YES" id="IRh-Rw-Gt7"/>
+                        </connections>
                     </view>
+                    <connections>
+                        <outlet property="currentActivity" destination="PD6-PH-ZRz" id="zDf-vR-8sA"/>
+                        <outlet property="playGameButton" destination="ZYF-pL-mSO" id="Pry-zC-C2Z"/>
+                        <outlet property="stepsToGoal" destination="O23-Zb-NR2" id="kLB-K2-AB0"/>
+                        <outlet property="todaySteps" destination="Yun-Fh-Zj9" id="J50-xG-wCS"/>
+                        <outlet property="updatedStepGoal" destination="rPH-lu-vfy" id="BSW-Tm-KZ1"/>
+                        <outlet property="yesterdaySteps" destination="wbK-Wi-NpU" id="Fa4-pl-6xm"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ycJ-jW-3mX" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <tapGestureRecognizer id="pcO-eq-gbo">
+                    <connections>
+                        <action selector="tapBackground:" destination="Qft-90-4d0" id="1d7-HC-FW3"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="-650.39999999999998" y="29.23538230884558"/>
         </scene>
